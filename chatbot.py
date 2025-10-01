@@ -1,32 +1,26 @@
-"""
-Module: chatbot.py
-Description: Handles placement data queries for chatbot responses.
-"""
 
 import json
 
 
 def load_data():
-    """Load placement data from JSON file."""
+
     with open("data/placements.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
 
 def process_query(query):
-    """Process user query and return matching companies."""
+
     query = query.lower()
     data = load_data()
 
     year = cgpa = company = role = domain = tech_filter = month = None
     ask_package = ask_hiring = False
 
-    # Detect year
     for y in [2025, 2024, 2023]:
         if str(y) in query:
             year = y
             break
 
-    # Detect CGPA
     words = query.split()
     for i, word in enumerate(words):
         if word == "cgpa" and i + 1 < len(words):
@@ -44,13 +38,11 @@ def process_query(query):
             except ValueError:
                 continue
 
-    # Detect company
     for item in data:
         if item["company"].lower() in query:
             company = item["company"]
             break
 
-    # Detect domain
     domains = [
         'fintech', 'edtech', 'saas', 'healthtech', 'ecommerce', 'logistics',
         'mobility', 'media', 'realestate', 'it services', 'insurtech'
@@ -60,7 +52,6 @@ def process_query(query):
             domain = d
             break
 
-    # Detect role
     roles_all = [
         'sde', 'frontend', 'backend', 'full stack', 'product manager',
         'qa engineer', 'ml engineer', 'data engineer', 'support engineer', 'analyst'
@@ -70,7 +61,6 @@ def process_query(query):
             role = r
             break
 
-    # Detect month
     months = {
         "january": "01", "february": "02", "march": "03", "april": "04",
         "may": "05", "june": "06", "july": "07", "august": "08",
@@ -81,13 +71,11 @@ def process_query(query):
             month = code
             break
 
-    # Detect tech/non-tech filter
     if "non tech" in query or "non-tech" in query:
         tech_filter = "non-tech"
     elif "tech" in query:
         tech_filter = "tech"
 
-    # Intent detection
     if "package" in query or "salary" in query:
         ask_package = True
     if any(
@@ -98,7 +86,6 @@ def process_query(query):
     ):
         ask_hiring = True
 
-    # Filter matching results
     results = []
     for item in data:
         if year and item["year"] != year:
@@ -119,24 +106,24 @@ def process_query(query):
 
     if not results:
         return (
-            "😕 No matching companies found. Try modifying your query like: "
+            " No matching companies found. Try modifying your query like: "
             "'tech roles in August with CGPA 8+'."
         )
 
     if ask_package and company:
         return (
-            f"💰 <b>{company}</b> offers a package of "
+            f" <b>{company}</b> offers a package of "
             f"<b>₹{results[0]['package_lpa']} LPA</b>."
         )
 
     if ask_hiring and company:
         return (
-            f"🧩 <b>Hiring process of {company}</b>: "
+            f" <b>Hiring process of {company}</b>: "
             f"{results[0]['hiring_process']}"
         )
 
-    # Table output
-    reply = f"<p>📋 Found <b>{len(results)}</b> company(ies):</p>"
+  
+    reply = f"<p> Found <b>{len(results)}</b> company(ies):</p>"
     reply += """
     <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;
            margin-top: 10px; font-size: 15px;">
