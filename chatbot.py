@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
 import json
 import re
 
 def load_data():
-<<<<<<< HEAD
     """Load placement data from JSON file."""
     try:
         with open("data/placements.json", "r", encoding="utf-8") as file:
@@ -17,16 +12,6 @@ def load_data():
 def process_query(query):
     """Process user query and return matching companies with robust parsing."""
     query = query.lower().strip()
-=======
-
-    with open("data/placements.json", "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def process_query(query):
-
-    query = query.lower()
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
     data = load_data()
     if not data:
         return "⚠️ Data source not found."
@@ -34,7 +19,6 @@ def process_query(query):
     year = cgpa = company = role = domain = tech_filter = month = None
     ask_package = ask_hiring = False
 
-<<<<<<< HEAD
     # 1. Detect Year (Regex)
     year_match = re.search(r'\b(202[345])\b', query)
     if year_match:
@@ -56,40 +40,13 @@ def process_query(query):
                 cgpa_operator = "criteria"
 
     # 3. Detect Company (Check list)
-=======
-    for y in [2025, 2024, 2023]:
-        if str(y) in query:
-            year = y
-            break
-
-    words = query.split()
-    for i, word in enumerate(words):
-        if word == "cgpa" and i + 1 < len(words):
-            try:
-                cgpa = float(words[i + 1])
-                break
-            except ValueError:
-                continue
-        elif word.replace(".", "").isdigit():
-            try:
-                val = float(word)
-                if 5 <= val <= 10:
-                    cgpa = val
-                    break
-            except ValueError:
-                continue
-
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
     for item in data:
         comp_name = item["company"].lower()
         if comp_name in query:
             company = item["company"]
             break
 
-<<<<<<< HEAD
     # 4. Detect Domain
-=======
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
     domains = [
         'fintech', 'edtech', 'saas', 'healthtech', 'ecommerce', 'logistics',
         'mobility', 'media', 'realestate', 'it services', 'insurtech'
@@ -99,10 +56,7 @@ def process_query(query):
             domain = d
             break
 
-<<<<<<< HEAD
     # 5. Detect Role
-=======
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
     roles_all = [
         'sde', 'frontend', 'backend', 'full stack', 'product manager',
         'qa engineer', 'ml engineer', 'data engineer', 'support engineer', 'analyst'
@@ -112,12 +66,8 @@ def process_query(query):
             role = r
             break
 
-<<<<<<< HEAD
     # 6. Detect Month
     months_map = {
-=======
-    months = {
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
         "january": "01", "february": "02", "march": "03", "april": "04",
         "may": "05", "june": "06", "july": "07", "august": "08",
         "september": "09", "october": "10", "november": "11", "december": "12"
@@ -127,17 +77,12 @@ def process_query(query):
             month = code
             break
 
-<<<<<<< HEAD
     # 7. Tech/Non-Tech Filter
     if re.search(r'non[- ]?tech', query):
-=======
-    if "non tech" in query or "non-tech" in query:
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
         tech_filter = "non-tech"
     elif "tech" in query:
         tech_filter = "tech"
 
-<<<<<<< HEAD
     # 8. Intent Detection (Expanded Synonyms)
     ask_package = any(kw in query for kw in ["package", "salary", "lpa", "pay", "ctc", "stipend", "money", "much", "worth"])
     ask_hiring = any(kw in query for kw in ["hiring", "interview", "selection", "process", "rounds", "test", "eligible", "procedure"])
@@ -150,18 +95,6 @@ def process_query(query):
     is_count = any(kw in query for kw in ["how many", "count", "number of", "total", "list"])
 
     # --- Filtering Logic ---
-=======
-    if "package" in query or "salary" in query:
-        ask_package = True
-    if any(
-        kw in query for kw in [
-            "hiring process", "interview process",
-            "selection process", "recruitment process"
-        ]
-    ):
-        ask_hiring = True
-
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
     results = []
     # Check for "show all" intent
     show_all = any(kw in query for kw in ["show all", "all companies", "list all"])
@@ -214,7 +147,6 @@ def process_query(query):
 
     if not results:
         return (
-<<<<<<< HEAD
             tag_html + "😕 No matching companies found. Try something like: "
             "<i>'Highest package in 2025'</i> or <i>'When is Amazon visiting?'</i>"
         )
@@ -272,49 +204,5 @@ def process_query(query):
         reply += f"<tr><td colspan='5' style='text-align:center'><i>... and {len(results)-15} more</i></td></tr>"
         
     reply += "</tbody></table></div>"
-=======
-            " No matching companies found. Try modifying your query like: "
-            "'tech roles in August with CGPA 8+'."
-        )
-
-    if ask_package and company:
-        return (
-            f" <b>{company}</b> offers a package of "
-            f"<b>₹{results[0]['package_lpa']} LPA</b>."
-        )
-
-    if ask_hiring and company:
-        return (
-            f" <b>Hiring process of {company}</b>: "
-            f"{results[0]['hiring_process']}"
-        )
-
-  
-    reply = f"<p> Found <b>{len(results)}</b> company(ies):</p>"
-    reply += """
-    <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;
-           margin-top: 10px; font-size: 15px;">
-        <tr style="background-color: #f0f0f0;">
-            <th>Company</th>
-            <th>Role</th>
-            <th>Package</th>
-            <th>Min CGPA</th>
-            <th>Domain</th>
-            <th>Visit Date</th>
-        </tr>
-    """
-    for comp in results:
-        reply += f"""
-        <tr>
-            <td>{comp['company']}</td>
-            <td>{comp.get('roles_offered', '—')}</td>
-            <td>₹{comp['package_lpa']} LPA</td>
-            <td>{comp['min_cgpa']}</td>
-            <td>{comp['domain']}</td>
-            <td>{comp['visit_date']}</td>
-        </tr>
-        """
-    reply += "</table>"
->>>>>>> 9b0d80b9345dd76d72cf0c15c07e885d843f72e6
 
     return reply.strip()
